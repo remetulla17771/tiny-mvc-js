@@ -1,0 +1,9 @@
+{
+  "ignore": [
+    "dev.sqlite",
+    "dev.sqlite-journal",
+    "sessions/*",
+    "public/*"
+  ],
+  "ext": "js,json,njk"
+}

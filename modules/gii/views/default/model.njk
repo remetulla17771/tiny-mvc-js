@@ -1,0 +1,28 @@
+<div class="card">
+    <h1>📦 Model Generator</h1>
+
+    {% if error %}
+        <div class="alert-error"><strong>Ошибка:</strong> {{ error }}</div>
+    {% endif %}
+
+    {% if result %}
+        <div class="alert-success">
+            <strong>Успешно!</strong> Модель создана: <code>{{ result.filePath }}</code><br>
+            <small>Обнаруженные колонки: {{ result.columns.join(', ') }}</small>
+        </div>
+    {% endif %}
+
+    <form method="POST" action="/gii/default/model">
+        <div class="form-group">
+            <label>Имя таблицы в БД (Table Name)</label>
+            <input type="text" name="tableName" placeholder="например: users или post_comments" required>
+        </div>
+
+        <div class="form-group">
+            <label>Имя класса модели (Model Class Name)</label>
+            <input type="text" name="className" placeholder="например: User или PostComment" required>
+        </div>
+
+        <button type="submit" class="btn">Сгенерировать код</button>
+    </form>
+</div>

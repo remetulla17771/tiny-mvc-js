@@ -1,0 +1,22 @@
+<h1>Создание нового пользователя</h1>
+
+{# ActiveForm::begin() #}
+{{ ActiveForm.begin({ action: '/site/create', method: 'POST' }).html | safe }}
+
+  {# $form->field($model, 'username') #}
+  {{ ActiveForm.prototype.field(user, 'username').label('Имя пользователя') | safe }}
+
+  {# $form->field($model, 'email') #}
+  {{ ActiveForm.prototype.field(user, 'email').label('Электронная почта') | safe }}
+
+  {{ ActiveForm.prototype.field(user, 'password').label('Пароль') | safe }}
+
+  <div class="form-group">
+      <button type="submit" class="btn">Сохранить</button>
+  </div>
+
+{# ActiveForm::end() #}
+{{ ActiveForm.end() | safe }}
+
+<br>
+<a href="/site/index">&larr; Назад</a>

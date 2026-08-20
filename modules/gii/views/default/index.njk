@@ -1,0 +1,22 @@
+{# modules/gii/views/default/index.njk #}
+<h1>Инструменты генерации кода</h1>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+    <div class="card">
+        <h3>📦 Model Generator</h3>
+        <p>Генерирует класс ActiveRecord на основе структуры существующей таблицы базы данных.</p>
+        <a href="/gii/default/model" class="btn" style="display:inline-block; text-decoration:none;">Запустить</a>
+    </div>
+
+    <div class="card">
+        <h3>🎮 Controller Generator</h3>
+        <p>Генерирует контроллер с необходимыми экшенами и заготовками Nunjucks-шаблонов.</p>
+        <a href="/gii/default/controller" class="btn" style="display:inline-block; text-decoration:none;">Запустить</a>
+    </div>
+
+    <div class="card">
+        <h3>🧩 Module Generator</h3>
+        <p>Генерирует скелет нового модуля с собственными контроллерами, макетом и представлениями.</p>
+        <a href="/gii/default/module" class="btn" style="display:inline-block; text-decoration:none;">Запустить</a>
+    </div>
+</div>
