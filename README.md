@@ -1,582 +1,700 @@
-# TinyMVC JS
+# 🚀 Tiny-MVC JS Framework
 
-> Lightweight JavaScript MVC framework with Routing, Dependency Injection, Controllers, Models and Views.
+**Tiny-MVC JS** — лёгкий веб-фреймворк на базе **Node.js + Fastify**, вдохновлённый архитектурой и экосистемой **Yii2**.
 
-![License](https://img.shields.io/badge/license-MIT-green)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-yellow)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+Фреймворк предоставляет привычную MVC-архитектуру, ActiveRecord ORM, компоненты и модули, маршрутизацию, Nunjucks-шаблоны, Asset Bundles и встроенный Gii Generator.
 
-TinyMVC JS — это минималистичный MVC-фреймворк на чистом JavaScript без зависимостей. Он предоставляет привычную архитектуру, похожую на Laravel и Yii2, сохраняя небольшой размер и простоту.
-
-## Возможности
-
-- MVC архитектура
-- SPA Router
-- Dependency Injection Container
-- Service Provider
-- Controller & BaseController
-- Model с реактивным состоянием
-- Layout + View Renderer
-- Middleware
-- Event Bus
-- Local Storage Driver
-- REST API Helper
-- Zero Dependencies
+Цель проекта — перенести удобные архитектурные подходы Yii2 в современную JavaScript/Node.js среду, сохранив простоту и минимализм.
 
 ---
 
-# Установка
+## ✨ Возможности
 
-```bash
-git clone https://github.com/remetulla17771/tiny-mvc-js.git
-cd tiny-mvc-js
-```
-
-или подключите через npm:
-
-```bash
-npm install tiny-mvc-js
-```
+* 🚀 Fastify как HTTP Core Engine
+* 🏗 MVC-архитектура
+* 🧩 Components и Modules
+* 💉 Изоляция контекста через `AsyncLocalStorage`
+* 🗄 ActiveRecord на базе Knex.js
+* 🎨 Nunjucks Template Engine
+* 📦 Asset Bundles
+* 🛠 Gii Generator
+* 🔐 Session & Cookie
+* 💾 SQLite session storage
+* 🐛 `var_dump()` и `dd()` в стиле PHP
+* ⚡ Автоматическое сопоставление URL с Controller/Action
+* 📁 Модульная архитектура приложения
 
 ---
 
-# Быстрый старт
+# 🛠 Технологический стек
 
-## Структура проекта
+| Технология            | Назначение                     |
+| --------------------- | ------------------------------ |
+| **Node.js**           | Runtime                        |
+| **Fastify**           | HTTP-сервер и core engine      |
+| **AsyncLocalStorage** | Контекст текущего HTTP-запроса |
+| **Knex.js**           | Работа с базой данных          |
+| **ActiveRecord**      | ORM-паттерн                    |
+| **Nunjucks**          | Шаблонизация                   |
+| **@fastify/session**  | Сессии                         |
+| **@fastify/cookie**   | Cookies                        |
+| **connect-sqlite3**   | Хранение сессий в SQLite       |
+
+---
+
+# 📁 Структура проекта
 
 ```text
-src/
+tiny-mvc-js/
 │
-├── core/
-│   ├── Application.js
-│   ├── Router.js
-│   ├── Container.js
-│   ├── Controller.js
-│   ├── Model.js
-│   ├── View.js
-│   └── EventBus.js
+├── assets/
+│   └── ...                  # Asset Bundles
+│
+├── config/
+│   └── main.js              # Конфигурация приложения
 │
 ├── controllers/
-│   └── HomeController.js
+│   └── SiteController.js    # Глобальные контроллеры
+│
+├── framework/
+│   ├── base/
+│   │   ├── Component.js     # Базовый Component
+│   │   └── Module.js        # Базовый Module
+│   │
+│   ├── db/
+│   │   ├── ActiveRecord.js  # ActiveRecord
+│   │   └── ...              # Работа с Knex
+│   │
+│   ├── exceptions/
+│   │   ├── HttpException.js
+│   │   └── NotFoundHttpException.js
+│   │
+│   ├── helpers/
+│   │   └── VarDumper.js     # var_dump / dd
+│   │
+│   ├── Application.js       # Application + Yii facade
+│   ├── BaseController.js    # Базовый Controller
+│   └── Router.js             # Маршрутизация
 │
 ├── models/
-│   └── User.js
+│   └── ...                  # ActiveRecord models
+│
+├── modules/
+│   ├── admin/
+│   │   └── ...
+│   │
+│   └── gii/
+│       └── ...
+│
+├── public/
+│   ├── css/
+│   ├── js/
+│   └── uploads/
 │
 ├── views/
 │   ├── layouts/
-│   │     └── main.html
-│   └── home/
-│         └── index.html
+│   └── ...
 │
-├── routes.js
-└── app.js
+├── index.js                 # Entry point
+└── package.json
 ```
 
 ---
 
-# Создание приложения
+# 🚀 Установка
 
-```javascript
-import { Application } from './core/Application.js';
+Клонируйте репозиторий:
 
-const app = new Application('#app');
+```bash
+git clone https://github.com/remetulla17771/tiny-mvc-js.git
+```
 
-app.run();
+Перейдите в директорию проекта:
+
+```bash
+cd tiny-mvc-js
+```
+
+Установите зависимости:
+
+```bash
+npm install
 ```
 
 ---
 
-# Роутинг
+# ▶️ Запуск
 
-`routes.js`
+Для запуска приложения в режиме разработки:
 
-```javascript
-import HomeController from './controllers/HomeController.js';
-
-export default (router) => {
-
-    router.get('/', HomeController, 'index');
-
-    router.get('/about', HomeController, 'about');
-
-    router.post('/login', HomeController, 'login');
-
-};
+```bash
+npm run dev
 ```
 
-### Параметры
-
-```javascript
-router.get('/users/:id', UserController, 'show');
-```
-
-Получение параметра:
-
-```javascript
-export default class UserController {
-
-    show({ params }) {
-
-        console.log(params.id);
-
-    }
-
-}
-```
-
-URL
+После запуска приложение доступно по адресу:
 
 ```text
-/users/25
-```
-
-Результат
-
-```javascript
-params.id === "25"
+http://localhost:3008
 ```
 
 ---
 
-# Controller
+# 🌐 Routing
+
+Tiny-MVC JS использует собственный Router для сопоставления URL с контроллерами и actions.
+
+Маршрутизация построена по принципу:
+
+```text
+URL
+ ↓
+Router
+ ↓
+Module / Controller
+ ↓
+Action
+```
+
+## Примеры
+
+Главная страница:
+
+```text
+GET /
+```
+
+вызывает:
 
 ```javascript
-import { Controller } from '../core/Controller.js';
+SiteController.actionIndex()
+```
 
-export default class HomeController extends Controller {
+---
 
-    index() {
+Маршрут:
 
-        return this.render('home/index', {
+```text
+GET /user-profile/show-info
+```
 
-            title: 'TinyMVC',
-            message: 'Hello World'
+преобразуется в:
 
-        });
+```javascript
+UserProfileController.actionShowInfo()
+```
 
+---
+
+Для модулей:
+
+```text
+GET /admin/users/create
+```
+
+вызывает:
+
+```javascript
+modules/admin/controllers/UsersController.actionCreate()
+```
+
+Таким образом, URL автоматически преобразуется из `kebab-case` в имена классов и actions.
+
+---
+
+# 🧩 Modules
+
+Модули позволяют изолировать отдельные части приложения.
+
+Например:
+
+```text
+modules/
+└── admin/
+    ├── controllers/
+    ├── models/
+    ├── views/
+    ├── layouts/
+    └── Module.js
+```
+
+Модуль может содержать собственные:
+
+* Controllers
+* Models
+* Views
+* Layouts
+* Configuration
+* Components
+
+Это позволяет строить приложение из независимых функциональных частей.
+
+---
+
+# 🛠 Gii Generator
+
+Tiny-MVC JS включает встроенный генератор кода **Gii**.
+
+После запуска приложения генератор доступен по адресу:
+
+```text
+http://localhost:3008/gii
+```
+
+Gii предназначен для автоматического создания компонентов приложения.
+
+## Доступные генераторы
+
+### Model Generator
+
+Создаёт ActiveRecord-модель на основе структуры таблицы базы данных.
+
+Пример:
+
+```text
+Database
+   ↓
+Model Generator
+   ↓
+models/User.js
+```
+
+---
+
+### Controller Generator
+
+Создаёт:
+
+* Controller
+* Actions
+* Nunjucks templates
+
+Это позволяет быстро создавать стандартные CRUD-компоненты приложения.
+
+---
+
+### Module Generator
+
+Создаёт полноценную структуру нового модуля:
+
+```text
+modules/
+└── example/
+    ├── controllers/
+    ├── models/
+    ├── views/
+    ├── layouts/
+    │   └── main.njk
+    └── Module.js
+```
+
+---
+
+# 🗄 ActiveRecord
+
+Работа с базой данных построена поверх **Knex.js**, при этом используется архитектурный паттерн **ActiveRecord**.
+
+## Создание модели
+
+Например, модель пользователя:
+
+```javascript
+// models/User.js
+
+import { ActiveRecord } from '../framework/db/ActiveRecord.js';
+
+export class User extends ActiveRecord {
+
+    static tableName() {
+        return 'users';
     }
 
 }
 ```
 
-Доступно:
-
-| Метод | Описание |
-|--------|----------|
-| render() | Отобразить View |
-| redirect() | Переход |
-| json() | JSON ответ |
-| request | Request объект |
-| params | Route параметры |
+`tableName()` определяет таблицу, с которой работает модель.
 
 ---
 
-# View
+## Поиск записи
 
-`views/home/index.html`
-
-```html
-<h1>{{ title }}</h1>
-
-<p>{{ message }}</p>
-```
-
-Рендер:
+Поиск по первичному ключу:
 
 ```javascript
-return this.render('home/index', {
-
-    title: 'Главная',
-    message: 'Добро пожаловать'
-
-});
-```
-
-Получится:
-
-```html
-<h1>Главная</h1>
-
-<p>Добро пожаловать</p>
+const user = await User.findOne(1);
 ```
 
 ---
 
-# Layout
+## Поиск по условию
 
-`views/layouts/main.html`
+```javascript
+const activeUsers = await User
+    .find()
+    .where({
+        status: 'active'
+    })
+    .all();
+```
 
-```html
+Таким образом, запрос строится через ActiveRecord API, а выполнение происходит асинхронно.
+
+---
+
+# 🎨 Views
+
+Для отображения HTML используется **Nunjucks**.
+
+Шаблоны имеют расширение:
+
+```text
+.njk
+```
+
+Например:
+
+```text
+views/
+├── layouts/
+│   └── main.njk
+│
+└── site/
+    └── index.njk
+```
+
+---
+
+# 📦 Asset Bundles
+
+Tiny-MVC JS поддерживает архитектуру **Asset Bundles**, аналогичную Yii2.
+
+Например, приложение может зарегистрировать:
+
+```text
+BootstrapAsset
+AppAsset
+```
+
+Asset Bundle отвечает за подключение необходимых CSS и JavaScript файлов.
+
+В layout можно зарегистрировать Asset Bundle:
+
+```njk
+{{ registerAsset(BootstrapAsset) }}
+```
+
+---
+
+## Layout
+
+Пример основного layout:
+
+```njk
+{# views/layouts/main.njk #}
+
+{{ registerAsset(BootstrapAsset) }}
+
 <!DOCTYPE html>
-
-<html>
+<html lang="ru">
 
 <head>
 
+    <meta charset="UTF-8">
+
     <title>{{ title }}</title>
+
+    {{ view.renderHead() | safe }}
 
 </head>
 
 <body>
 
-    {{ content }}
+    <div class="container mt-4">
+
+        {{ content | safe }}
+
+    </div>
+
+    {{ view.renderEndBody() | safe }}
 
 </body>
 
 </html>
 ```
 
-Контроллер:
+### Head Assets
+
+```njk
+{{ view.renderHead() | safe }}
+```
+
+выводит ресурсы, зарегистрированные для `<head>`.
+
+### Body Assets
+
+```njk
+{{ view.renderEndBody() | safe }}
+```
+
+выводит ресурсы, предназначенные для конца `<body>`.
+
+---
+
+# ⚡ AsyncLocalStorage
+
+Для доступа к контексту текущего HTTP-запроса используется Node.js `AsyncLocalStorage`.
+
+Благодаря этому не требуется передавать `request` и `response` через каждый метод вручную.
+
+Контекст доступен через:
 
 ```javascript
-this.layout('main');
+Yii.app.req
+```
 
-return this.render('home/index');
+и:
+
+```javascript
+Yii.app.res
+```
+
+Это позволяет обращаться к текущему HTTP-контексту из разных частей приложения.
+
+Например:
+
+```javascript
+const request = Yii.app.req;
+const response = Yii.app.res;
 ```
 
 ---
 
-# Model
+# 🧱 Application
+
+Главным объектом приложения является:
 
 ```javascript
-import { Model } from '../core/Model.js';
-
-export default class User extends Model {
-
-    state = {
-
-        name: '',
-        email: ''
-
-    };
-
-}
+Application
 ```
 
-Использование
+Он отвечает за запуск и организацию основных компонентов фреймворка.
 
-```javascript
-const user = new User();
-
-user.set('name', 'Damir');
-
-console.log(user.get('name'));
-```
-
-Наблюдение
-
-```javascript
-user.watch('name', value => {
-
-    console.log(value);
-
-});
-```
-
----
-
-# Dependency Injection
-
-Регистрация
-
-```javascript
-app.container.singleton('api', () => {
-
-    return new ApiService();
-
-});
-```
-
-Получение
-
-```javascript
-const api = app.container.get('api');
-```
-
-В контроллере
-
-```javascript
-export default class HomeController extends Controller {
-
-    constructor(container) {
-
-        super();
-
-        this.api = container.get('api');
-
-    }
-
-}
-```
-
----
-
-# Service Provider
-
-```javascript
-export default class AppServiceProvider {
-
-    register(container) {
-
-        container.singleton('storage', () => {
-
-            return new Storage();
-
-        });
-
-    }
-
-}
-```
-
-Подключение
-
-```javascript
-app.register(AppServiceProvider);
-```
-
----
-
-# Middleware
-
-Создание
-
-```javascript
-export default function auth({ next, redirect }) {
-
-    if (!localStorage.token)
-
-        return redirect('/login');
-
-    next();
-
-}
-```
-
-Маршрут
-
-```javascript
-router.get('/profile',
-
-    ProfileController,
-
-    'index',
-
-    [auth]
-
-);
-```
-
----
-
-# Event Bus
-
-Подписка
-
-```javascript
-app.events.on('login', user => {
-
-    console.log(user);
-
-});
-```
-
-Отправка
-
-```javascript
-app.events.emit('login', currentUser);
-```
-
----
-
-# HTTP Client
-
-```javascript
-const response = await app.http.get('/api/users');
-```
-
-POST
-
-```javascript
-await app.http.post('/api/login', {
-
-    email,
-    password
-
-});
-```
-
----
-
-# Local Storage
-
-```javascript
-app.storage.set('theme', 'dark');
-
-const theme = app.storage.get('theme');
-
-app.storage.remove('theme');
-```
-
----
-
-# Redirect
-
-```javascript
-return this.redirect('/dashboard');
-```
-
----
-
-# JSON Response
-
-```javascript
-return this.json({
-
-    success: true
-
-});
-```
-
----
-
-# Пример контроллера
-
-```javascript
-import { Controller } from '../core/Controller.js';
-import User from '../models/User.js';
-
-export default class UserController extends Controller {
-
-    index() {
-
-        const user = new User();
-
-        user.set('name', 'Damir');
-
-        return this.render('user/index', {
-
-            title: 'Профиль',
-            user
-
-        });
-
-    }
-
-}
-```
-
----
-
-# Жизненный цикл
+Архитектурно приложение построено вокруг:
 
 ```text
-Browser
-    │
-    ▼
-Router
-    │
-    ▼
-Middleware
-    │
-    ▼
-Controller
-    │
-    ▼
-Model
-    │
-    ▼
-View
-    │
-    ▼
-Layout
-    │
-    ▼
-HTML
+Application
+│
+├── Router
+├── Components
+├── Modules
+├── Database
+├── Session
+├── View
+└── HTTP Context
+```
+
+Также предоставляется глобальный facade:
+
+```javascript
+Yii
+```
+
+что позволяет использовать знакомый подход Yii2:
+
+```javascript
+Yii.app
 ```
 
 ---
 
-# API
+# 🎮 Controllers
 
-## Router
+Контроллеры приложения находятся в:
 
-```javascript
-router.get(path, Controller, action)
-
-router.post(path, Controller, action)
-
-router.put(path, Controller, action)
-
-router.delete(path, Controller, action)
+```text
+controllers/
 ```
 
-## Controller
+Например:
 
-```javascript
-this.render(view, data)
-
-this.json(data)
-
-this.redirect(url)
-
-this.layout(name)
+```text
+controllers/
+└── SiteController.js
 ```
 
-## Container
+Для модульных контроллеров:
 
-```javascript
-container.bind()
-
-container.singleton()
-
-container.get()
-
-container.has()
+```text
+modules/
+└── admin/
+    └── controllers/
+        └── UsersController.js
 ```
 
-## Model
+Контроллеры наследуются от базового:
 
-```javascript
-model.get()
-
-model.set()
-
-model.watch()
-
-model.reset()
+```text
+BaseController
 ```
 
-## EventBus
+Базовый контроллер предоставляет общую функциональность для обработки запросов и отображения представлений.
+
+---
+
+# 🧩 Components
+
+Компоненты являются переиспользуемыми объектами приложения.
+
+Базовый класс расположен здесь:
+
+```text
+framework/base/Component.js
+```
+
+Архитектура компонентов позволяет централизовать сервисы и функциональность, используемую различными частями приложения.
+
+---
+
+# 💥 Exceptions
+
+Фреймворк предоставляет собственные HTTP exceptions.
+
+Основные классы:
+
+```text
+framework/exceptions/
+├── HttpException.js
+└── NotFoundHttpException.js
+```
+
+Например:
 
 ```javascript
-on()
+throw new NotFoundHttpException();
+```
 
-off()
+Это позволяет использовать исключения для обработки HTTP-ошибок на уровне приложения.
 
-emit()
+---
 
-once()
+# 🐛 Debug Helpers
+
+Tiny-MVC JS предоставляет функции дампа, знакомые разработчикам PHP/Yii2.
+
+## var_dump
+
+```javascript
+var_dump(data);
+```
+
+Выводит подробную структуру значения.
+
+---
+
+## dd
+
+```javascript
+dd(data);
+```
+
+`dd` означает:
+
+```text
+Dump and Die
+```
+
+Функция выводит данные и завершает выполнение текущего запроса.
+
+Пример:
+
+```javascript
+dd(user);
 ```
 
 ---
 
-# Roadmap
+# 🏗 Архитектура
 
-- [x] Router
-- [x] MVC
-- [x] View Engine
-- [x] Layout
-- [x] DI Container
-- [x] Middleware
-- [x] Event Bus
-- [ ] CLI Generator
-- [ ] Validation
-- [ ] Form Builder
-- [ ] WebSocket Support
+Общая архитектура приложения:
+
+```text
+                    ┌──────────────┐
+                    │    Client    │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │   Fastify    │
+                    └──────┬───────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │    Router    │
+                    └──────┬───────┘
+                           │
+                  ┌────────┴────────┐
+                  ▼                 ▼
+             Controller          Module
+                  │                 │
+                  └────────┬────────┘
+                           ▼
+                       Model
+                           │
+                           ▼
+                     ActiveRecord
+                           │
+                           ▼
+                         Knex
+                           │
+                           ▼
+                       Database
+
+                           │
+                           ▼
+                         View
+                           │
+                           ▼
+                       Nunjucks
+                           │
+                           ▼
+                         HTML
+```
 
 ---
 
-# License
+# 🆚 Концепция
 
-MIT © 2026 Damir Remetulla
+Tiny-MVC JS использует архитектурные идеи Yii2, адаптируя их под Node.js:
+
+| Yii2         | Tiny-MVC JS      |
+| ------------ | ---------------- |
+| Application  | `Application`    |
+| Yii facade   | `Yii`            |
+| Controller   | `BaseController` |
+| ActiveRecord | `ActiveRecord`   |
+| Module       | `Module`         |
+| Component    | `Component`      |
+| View         | Nunjucks         |
+| AssetBundle  | Asset Bundles    |
+| Gii          | Gii Generator    |
+| DB Layer     | Knex.js          |
+| HTTP Server  | Fastify          |
+
+---
+
+# 📌 Принцип проекта
+
+Tiny-MVC JS не пытается быть большим универсальным фреймворком.
+
+Основная идея проекта:
+
+> **Yii2-подобная архитектура для Node.js без лишней сложности.**
+
+Фреймворк предоставляет готовую структуру приложения, но при этом оставляет разработчику контроль над кодом и архитектурой.
+
+---
+
+# 📄 License
+
+MIT License
+
+Copyright © 2026 Remetulla17771
