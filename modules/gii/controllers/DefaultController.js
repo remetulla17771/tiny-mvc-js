@@ -80,4 +80,25 @@ export class DefaultController extends BaseController {
             error
         });
     }
+
+    async actionCrud() {
+        let result = null;
+        let error = null;
+
+        if (this.req.method === 'POST') {
+            const { modelClass, controllerClass } = this.req.body;
+            try {
+                result = await CrudGenerator.generate({ modelClass, controllerClass });
+            } catch (err) {
+                error = err.message;
+            }
+        }
+
+        return this.render('crud', {
+            title: 'CRUD Generator',
+            result,
+            error
+        });
+    }
+
 }

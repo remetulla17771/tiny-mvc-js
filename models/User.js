@@ -5,6 +5,14 @@ export class User extends ActiveRecord {
         return 'users';
     }
 
+    attributeLabels() {
+        return {
+            id: 'ID',
+            username: 'Имя пользователя',
+            email: 'Электронная почта'
+        };
+    }
+
     rules() {
         return [
             [['username', 'email'], 'required'],

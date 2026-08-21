@@ -1,0 +1,61 @@
+
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <h1 class="mb-2">Controller Generator</h1>
+        <p class="text-muted border-bottom pb-3 mb-4">
+            This generator helps you to quickly generate a new controller class, its action methods, and corresponding view templates.
+        </p>
+
+        {% if error %}
+            <div class="alert alert-danger mb-4">{{ error }}</div>
+        {% endif %}
+
+        {% if result and result.success %}
+            <div class="alert alert-success mb-4">
+                <h5 class="alert-heading">Controller generated successfully!</h5>
+                <hr>
+                <p class="mb-1"><strong>Controller File:</strong> <code>{{ result.filePath }}</code></p>
+                <p class="mb-0"><strong>Views Directory:</strong> <code>{{ result.viewsDir }}</code></p>
+            </div>
+        {% endif %}
+
+        <form action="/gii/default/controller" method="POST" class="needs-validation">
+            <!-- Controller Name -->
+            <div class="mb-4">
+                <label for="controllerName" class="form-label font-weight-bold" style="border-bottom: 1px dashed #6c757d; cursor: help;" title="Name of the controller class.">
+                    Controller Name / ID
+                </label>
+                <input type="text"
+                       name="controllerName"
+                       id="controllerName"
+                       class="form-control"
+                       placeholder="SiteController"
+                       value="{{ values.controllerName or '' }}"
+                       required />
+                <div class="form-text text-muted">
+                    Enter controller name with or without 'Controller' suffix (e.g., <code>Site</code>, <code>PostController</code>).
+                </div>
+            </div>
+
+            <!-- Action IDs -->
+            <div class="mb-4">
+                <label for="actions" class="form-label font-weight-bold" style="border-bottom: 1px dashed #6c757d; cursor: help;" title="Comma-separated action IDs.">
+                    Action IDs
+                </label>
+                <input type="text"
+                       name="actions"
+                       id="actions"
+                       class="form-control"
+                       placeholder="index, view, create"
+                       value="{{ values.actions or 'index' }}" />
+                <div class="form-text text-muted">
+                    List action IDs separated by commas or spaces (e.g., <code>index, view, create, update</code>).
+                </div>
+            </div>
+
+            <div class="mt-4 pt-2">
+                <button type="submit" class="btn btn-primary px-4">Generate Controller</button>
+            </div>
+        </form>
+    </div>
+</div>

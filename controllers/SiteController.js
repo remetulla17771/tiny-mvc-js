@@ -1,28 +1,52 @@
 // controllers/SiteController.js
-import { BaseController } from '../framework/BaseController.js';
-import { User } from '../models/User.js';
-import { Yii } from '../framework/Application.js';
+import {BaseController} from '../framework/BaseController.js';
+import {User} from '../models/User.js';
+import {Yii} from '../framework/Application.js';
 import {var_dump} from "../framework/helpers/VarDumper.js";
+import {ActiveDataProvider} from "../framework/ActiveDataProvider.js";
+import {GridView} from "../framework/widgets/GridView.js";
+import {DetailView} from "../framework/widgets/DetailView.js";
 
 export class SiteController extends BaseController {
 
     // GET /site/index
     async actionIndex() {
-        const users = await User.findAll();
+        let users = await User.findAll();
         const userId = Yii.app.user.id;
-        // var_dump(Yii.app.config)
 
-        console.log(userId, "USER_ID")
+        const dataProvider = new ActiveDataProvider({
+            query: User.find(),
+            pageSize: 10
+        })
+
+        const gridViewHtml = await GridView.widget({
+            dataProvider: dataProvider,
+            columns: [
+                'id',
+                'username',
+                'email',
+                {
+                    label: 'Действия',
+                    value: (user) => {
+                        return `<a href="/site/view?id=${user.id}" class="btn btn-sm btn-success">Смотреть</a>
+                        <a href="/site/update?id=${user.id}" class="btn btn-sm btn-primary">Редактировать</a>
+                        <a href="/site/delete?id=${user.id}" class="btn btn-sm btn-danger">Удалить</a>`
+
+                    }
+                }
+            ]
+        });
         return this.render('index', {
             title: 'Главная страница',
-            users
+            users,
+            gridViewHtml
         });
     }
 
     async actionCreate() {
         const user = new User();
 
-        if(Yii.app.user.isGuest){
+        if (Yii.app.user.isGuest) {
             Yii.app.session.setFlash('danger', `Авторизуйтесь`);
             return this.redirect(['site/index']);
         }
@@ -61,10 +85,35 @@ export class SiteController extends BaseController {
         const id = this.req.query.id;
         const user = await User.findOne(id);
 
+        const detailViewHtml = await DetailView.widget({
+            model: user,
+            attributes: [
+                'id',
+                'username',
+                'email',
+                {
+                    label: 'Роль',
+                    // Пример асинхронного вычисления значение
+                    value: async (m) => {
+                        // Можно делать подзапросы к смежным таблицам/моделям
+                        const count = await m.getPostsCount?.() || 0;
+                        return `<span>Пользователь (постов: ${count})</span>`;
+                    }
+                },
+                {
+                    label: 'Статус',
+                    value: (m) => m.status === 'active'
+                        ? '<span class="badge bg-success">Активен</span>'
+                        : '<span class="badge bg-secondary">Заблокирован</span>'
+                }
+            ]
+        });
+
 
         return this.render('view', {
             title: user ? `Профиль ${user.username}` : 'Ошибка',
-            user
+            user,
+            detailViewHtml
         });
     }
 
@@ -77,7 +126,7 @@ export class SiteController extends BaseController {
         let error = null;
 
         if (this.req.method === 'POST') {
-            const { username, password } = this.req.body;
+            const {username, password} = this.req.body;
             const user = await User.findByUsername(username);
 
             // var_dump(user, username, this.req.body);
@@ -91,7 +140,7 @@ export class SiteController extends BaseController {
             }
         }
 
-        return this.render('login', { error });
+        return this.render('login', {error});
     }
 
     async actionLogout() {
@@ -101,20 +150,23 @@ export class SiteController extends BaseController {
     }
 
     async actionUpdate() {
-        // 1. Поиск модели или автоматический throw 404
-        // const user = await this.findModel(User, this.req.query.id);
-
         const user = await User.findOne(this.req.query.id);
 
-        if(!await user){
-            Yii.app.session.setFlash("danger", "Не найден пользователь")
-            return this.redirect(['site/index'])
+        if (!user) {
+            Yii.app.session.setFlash("danger", "Не найден пользователь");
+            return this.res.redirect('/site/index');
         }
 
-        // 2. Обработка POST
+        // 2. Обработка POST-запроса
         if (this.req.method === 'POST') {
-            if (user.load(this.req.body) && await user.save()) {
-                return this.res.redirect('/site/index');
+            // Загружаем данные из формы (req.body)
+            if (user.load(this.req.body)) {
+
+                // Сохраняем изменения в базе
+                if (await user.save()) {
+                    Yii.app.session.setFlash("success", "Данные успешно обновлены");
+                    return this.res.redirect('/site/index');
+                }
             }
         }
 

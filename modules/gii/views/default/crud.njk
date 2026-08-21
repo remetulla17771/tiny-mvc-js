@@ -1,0 +1,37 @@
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2>{{ title }}</h2>
+        <p class="text-muted">Генерация контроллера и шаблонов (index, view, create, update, _form) для ActiveRecord модели.</p>
+
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        {% if result and result.success %}
+            <div class="alert alert-success">
+                <h5>CRUD успешно сгенерирован!</h5>
+                <ul>
+                    <li><strong>Контроллер:</strong> {{ result.controllerPath }}</li>
+                    <li><strong>Шаблоны:</strong> {{ result.viewsDir }}</li>
+                </ul>
+            </div>
+        {% endif %}
+
+        <form action="/gii/default/crud" method="POST" class="card card-body">
+            <div class="mb-3">
+                <label for="modelClass" class="form-label">Класс Модели (Model Class)</label>
+                <input type="text" name="modelClass" id="modelClass" class="form-control" placeholder="User" required />
+                <div class="form-text">Имя существующего класса модели (например: <code>User</code>).</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="controllerClass" class="form-label">Класс Контроллера (Controller Class)</label>
+                <input type="text" name="controllerClass" id="controllerClass" class="form-control" placeholder="UserController" required />
+                <div class="form-text">Имя создаваемого контроллера (например: <code>UserController</code>).</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сгенерировать CRUD</button>
+        </form>
+    </div>
+</div>

@@ -1,11 +1,3 @@
 <h1>Профиль пользователя</h1>
 
-{% if user %}
-    <p><strong>ID:</strong> {{ user.id }}</p>
-    <p><strong>Имя:</strong> {{ user.username }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-{% else %}
-    <p class="error">Пользователь не найден!</p>
-{% endif %}
-
-<a href="/site/index">&larr; Назад к списку</a>
+{{ detailViewHtml | safe }}

@@ -42,7 +42,7 @@ ${actionsCode}
         for (const act of actions) {
             const viewPath = path.join(viewsDir, `${act.toLowerCase()}.njk`);
             const viewContent = `<div class="${viewFolder}-${act}">
-    <h1>${className} :: ${act}</h1>
+    <h1>${className}.${act}</h1>
     <p>Шаблон автосгенерирован через Gii Generator.</p>
 </div>`;
             await fs.writeFile(viewPath, viewContent, 'utf-8');

@@ -1,20 +1,22 @@
 <h1>Редактирование нового пользователя</h1>
 
-{# ActiveForm::begin() #}
-{{ ActiveForm.begin({ action: '/site/update?id='+user.id, method: 'POST' }).html | safe }}
 
-  {# $form->field($model, 'username') #}
-  {{ ActiveForm.prototype.field(user, 'username').label('Имя пользователя') | safe }}
-
-  {# $form->field($model, 'email') #}
-  {{ ActiveForm.prototype.field(user, 'email').label('Электронная почта') | safe }}
-
-  <div class="form-group">
-      <button type="submit" class="btn btn-success mt-3">Сохранить</button>
-  </div>
-
-{# ActiveForm::end() #}
-{{ ActiveForm.end() | safe }}
-
-<br>
 <a href="/site/index" class="btn btn-primary">&larr; Назад</a>
+
+{% set form = ActiveForm.begin({ action: '/site/update?id=' ~ user.id, method: 'post' }) %}
+
+{# 2. Выводим открывающий тег <form> #}
+{{ form.renderBegin() | safe }}
+
+    {{ form.field(user, 'username').textInput() | safe }}
+
+    {{ form.field(user, 'email').textInput().label('Электронная почта') | safe }}
+
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <a href="/site/index" class="btn btn-secondary">Отмена</a>
+    </div>
+
+{# 3. Закрываем форму #}
+{{ ActiveForm.end() | safe }}

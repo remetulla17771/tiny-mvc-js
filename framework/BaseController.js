@@ -5,6 +5,8 @@ import { NotFoundHttpException } from './exceptions/HttpException.js';
 import { ViewManager } from './web/ViewManager.js';
 import {AppAsset} from "../assets/AppAsset.js";
 import {BootstrapAsset} from "../assets/BootstrapAsset.js";
+import {GridView} from "./widgets/GridView.js";
+import {DetailView} from "./widgets/DetailView.js";
 export class BaseController {
     constructor(req, res) {
         this.req = req;
@@ -88,7 +90,9 @@ export class BaseController {
             view: this.view,
             year: new Date().getFullYear(),
             currentUser,
-            isGuest
+            isGuest,
+            GridView,
+            DetailView
         };
 
         // 4. Сначала рендерим внутреннее представление (View)
