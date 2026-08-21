@@ -101,12 +101,23 @@ export class GridView {
     renderPagination(pagination) {
         if (!pagination || pagination.pageCount <= 1) return '';
 
-        let html = '<nav><ul class="pagination mb-0">';
-        const currentUrl = Yii.app.req.raw.url.split('?')[0];
+        let html = '<nav class="mt-3"><ul class="pagination mb-0">';
+
+        // Безопасное получение URL из контекста приложения (Fastify req)
+        const req = Yii.app?.req;
+        const rawUrl = req?.raw?.url || req?.url || '/';
+        const currentUrl = rawUrl.split('?')[0];
+
+        // Сохраняем имеющиеся query-параметры (кроме page)
+        const searchParams = new URLSearchParams(rawUrl.includes('?') ? rawUrl.split('?')[1] : '');
 
         for (let i = 1; i <= pagination.pageCount; i++) {
             const active = i === pagination.page ? 'active' : '';
-            html += `<li class="page-item ${active}"><a class="page-link" href="${currentUrl}?page=${i}">${i}</a></li>`;
+            searchParams.set('page', i);
+
+            html += `<li class="page-item ${active}">
+                <a class="page-link" href="${currentUrl}?${searchParams.toString()}">${i}</a>
+            </li>`;
         }
 
         html += '</ul></nav>';

@@ -17,6 +17,7 @@ import FileStoreFactory from 'session-file-store';
 const SQLiteStore = connectSqlite3(fastifySession);
 const FileStore = FileStoreFactory(fastifySession);
 // Регистрируем функции в глобальной области
+globalThis.Yii = Yii;
 globalThis.var_dump = var_dump;
 globalThis.dd = dd;
 
@@ -39,10 +40,6 @@ async function bootstrap() {
             maxAge: 86400 * 1000 // 1 день
         },
         store: new FileStore({ path: './runtime/sessions' })
-        // store: new SQLiteStore({
-        //     db: 'sessions.sqlite', // Файл для хранения сессий
-        //     dir: './'
-        // }),
     });
 
     await fastify.register(fastifyStatic, {

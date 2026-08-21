@@ -11,13 +11,14 @@ export class SiteController extends BaseController {
 
     // GET /site/index
     async actionIndex() {
-        let users = await User.findAll();
-        const userId = Yii.app.user.id;
+        // Получаем текущую страницу из GET-параметра ?page=X (по умолчанию 1)
+        const page = parseInt(this.req.query?.page, 10) || 1;
 
         const dataProvider = new ActiveDataProvider({
             query: User.find(),
-            pageSize: 10
-        })
+            pageSize: 10,
+            page: page // <-- Передаем текущую страницу
+        });
 
         const gridViewHtml = await GridView.widget({
             dataProvider: dataProvider,
@@ -29,20 +30,18 @@ export class SiteController extends BaseController {
                     label: 'Действия',
                     value: (user) => {
                         return `<a href="/site/view?id=${user.id}" class="btn btn-sm btn-success">Смотреть</a>
-                        <a href="/site/update?id=${user.id}" class="btn btn-sm btn-primary">Редактировать</a>
-                        <a href="/site/delete?id=${user.id}" class="btn btn-sm btn-danger">Удалить</a>`
-
+                    <a href="/site/update?id=${user.id}" class="btn btn-sm btn-primary">Редактировать</a>
+                    <a href="/site/delete?id=${user.id}" class="btn btn-sm btn-danger">Удалить</a>`;
                     }
                 }
             ]
         });
+
         return this.render('index', {
             title: 'Главная страница',
-            users,
             gridViewHtml
         });
     }
-
     async actionCreate() {
         const user = new User();
 

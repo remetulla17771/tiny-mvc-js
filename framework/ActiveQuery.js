@@ -8,6 +8,13 @@ export class ActiveQuery {
         this.knexQuery = this.db(modelClass.tableName()).select('*');
     }
 
+    // Создание изолированной копии билдера для безопасных операций (count, pagination)
+    clone() {
+        const cloned = new ActiveQuery(this.modelClass);
+        cloned.knexQuery = this.knexQuery.clone();
+        return cloned;
+    }
+
     // Аналог ->where(['status' => 1]) или ->where('age > ?', [18])
     where(condition, params = []) {
         if (typeof condition === 'string') {
@@ -60,7 +67,9 @@ export class ActiveQuery {
 
     // Аналог ->count()
     async count() {
-        const result = await this.knexQuery.clone().clearSelect().count('* as count').first();
+        // Клонируем инстанс и полностью очищаем select, limit и offset для корректного подсчета всех строк
+        const cleanQuery = this.knexQuery.clone().clearSelect().clear('limit').clear('offset');
+        const result = await cleanQuery.count('* as count').first();
         return result ? Number(result.count) : 0;
     }
 
