@@ -12,9 +12,10 @@ import { config } from './config/main.js';
 import { setupRouter } from './framework/Router.js';
 import { var_dump, dd } from './framework/helpers/VarDumper.js';
 import connectSqlite3 from 'connect-sqlite3';
+import FileStoreFactory from 'session-file-store';
 
 const SQLiteStore = connectSqlite3(fastifySession);
-
+const FileStore = FileStoreFactory(fastifySession);
 // Регистрируем функции в глобальной области
 globalThis.var_dump = var_dump;
 globalThis.dd = dd;
@@ -37,6 +38,7 @@ async function bootstrap() {
             secure: false, // false для localhost (http)
             maxAge: 86400 * 1000 // 1 день
         },
+        store: new FileStore({ path: './runtime/sessions' })
         // store: new SQLiteStore({
         //     db: 'sessions.sqlite', // Файл для хранения сессий
         //     dir: './'
