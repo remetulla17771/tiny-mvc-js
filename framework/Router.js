@@ -3,6 +3,33 @@ import path from 'path';
 import { Yii } from './Application.js';
 import { NotFoundHttpException } from './exceptions/HttpException.js';
 
+/**
+ * Извлекает имена параметров из сигнатуры метода/функции
+ * @param {Function} fn Исполняемая функция/метод
+ * @returns {Array<{name: string, defaultValue: any}>}
+ */
+function extractMethodParams(fn) {
+    const fnStr = fn.toString();
+    const argsMatch = fnStr.slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')'));
+    if (!argsMatch.trim()) return [];
+
+    return argsMatch.split(',').map(param => {
+        const [rawName, rawDefaultValue] = param.split('=').map(s => s.trim());
+        const name = rawName.replace(/[\/\*.*\*\/]/g, '').trim(); // очистка от комментариев, если они есть
+        let defaultValue = undefined;
+
+        if (rawDefaultValue !== undefined) {
+            try {
+                defaultValue = JSON.parse(rawDefaultValue);
+            } catch {
+                defaultValue = rawDefaultValue.replace(/^['"]|['"]$/g, ''); // обработка строк 'val' или "val"
+            }
+        }
+
+        return { name, defaultValue };
+    });
+}
+
 export function setupRouter(fastify) {
     fastify.all('/*', async (req, res) => {
         if (req.url === '/favicon.ico' || req.url.startsWith('/.well-known')) {
@@ -45,7 +72,7 @@ export function setupRouter(fastify) {
         }
 
         try {
-            // Динамический импорт по абсолютному пути (file:// нужен для ES modules в Windows/Node)
+            // Динамический импорт по абсолютному пути
             const module = await import(`file://${controllerPath}`);
             const ControllerClass = module[className] || module.default;
 
@@ -54,7 +81,20 @@ export function setupRouter(fastify) {
 
             if (typeof controller[actionMethod] === 'function') {
                 try {
-                    return await controller[actionMethod]();
+                    // --- АВТОМАТИЧЕСКАЯ ПОДСТАНОВКА ПАРАМЕТРОВ ИЗ REQ.QUERY ---
+                    const targetMethod = controller[actionMethod];
+                    const paramMeta = extractMethodParams(targetMethod);
+                    const queryParams = req.query || {};
+
+                    const actionArgs = paramMeta.map(({ name, defaultValue }) => {
+                        if (queryParams[name] !== undefined) {
+                            return queryParams[name];
+                        }
+                        return defaultValue;
+                    });
+
+                    // Вызываем action с собранными параметрами
+                    return await targetMethod.apply(controller, actionArgs);
                 } catch (actionErr) {
                     if (actionErr.message === 'PHP_DIE_SIGNAL') return;
                     return await controller.renderError(actionErr);

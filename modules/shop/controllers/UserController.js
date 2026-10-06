@@ -39,8 +39,8 @@ export class UserController extends BaseController {
     }
 
     // Просмотр одной записи
-    async actionView() {
-        const id = this.req.query.id;
+    async actionView(id, pal) {
+        // const id = this.req.query.id;
         const model = await User.findOne(id);
         
         if (!model) {

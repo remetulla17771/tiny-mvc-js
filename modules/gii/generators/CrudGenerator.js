@@ -101,6 +101,7 @@ import { GridView } from '${frameworkRel}/widgets/GridView.js';
 import { DetailView } from '${frameworkRel}/widgets/DetailView.js';
 import { Yii } from '${frameworkRel}/Application.js';
 
+
 export class ${controllerClass} extends BaseController {
 
     // Список записей
