@@ -1,0 +1,33 @@
+{# modules/gii/views/default/module.njk #}
+<div class="card">
+    <h1>📦 Module Generator</h1>
+
+    {% if error %}
+        <div class="alert-error"><strong>Ошибка:</strong> {{ error }}</div>
+    {% endif %}
+
+    {% if result %}
+        <div class="alert-success">
+            <h3>🎉 Модуль "{{ result.moduleId }}" успешно сгенерирован!</h3>
+            <p><strong>Путь к папке:</strong> <code>{{ result.moduleDir }}</code></p>
+            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #bbf7d0;">
+            <p><strong>Не забудьте зарегистрировать модуль в <code>config/main.js</code>:</strong></p>
+            <pre style="background: #1e293b; color: #f8fafc; padding: 15px; border-radius: 6px; overflow-x: auto;">{{ result.configSnippet }}</pre>
+        </div>
+    {% endif %}
+
+    <form method="POST" action="/gii/default/module">
+        <div class="form-group">
+            <label>ID Модуля (Module ID)</label>
+            <input type="text" name="moduleId" placeholder="например: forum или shop" required>
+            <small style="color: #64748b;">Используется в URL, например: <code>/shop/default/index</code></small>
+        </div>
+
+        <div class="form-group">
+            <label>Имя класса модуля (Module Class) — некроссплатформенно / необязательно</label>
+            <input type="text" name="moduleClass" placeholder="например: ShopModule (по умолчанию вычисляется автоматически)">
+        </div>
+
+        <button type="submit" class="btn">Сгенерировать модуль</button>
+    </form>
+</div>

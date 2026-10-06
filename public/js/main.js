@@ -1,0 +1,1 @@
+console.log('AppAsset loaded successfully!');

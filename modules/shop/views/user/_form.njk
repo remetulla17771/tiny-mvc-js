@@ -1,0 +1,14 @@
+{% set form = ActiveForm.begin({ method: 'post' }) %}
+
+{{ form.html | safe }}
+
+    {{ form.field(model, 'username').textInput() | safe }}
+    {{ form.field(model, 'email').textInput() | safe }}
+    {{ form.field(model, 'password').passwordInput() | safe }}
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <a href="/shop/user/index" class="btn btn-secondary">Отмена</a>
+    </div>
+
+{{ ActiveForm.end() | safe }}

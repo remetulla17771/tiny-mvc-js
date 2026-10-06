@@ -1,0 +1,16 @@
+{# modules/admin/views/default/index.njk #}
+<div class="admin-dashboard">
+    <h1>🛠️ Панель администратора</h1>
+    <p>Добро пожаловать в модуль управления сайтом, <strong>{{ currentUser.username }}</strong>!</p>
+
+    <div style="margin-top: 20px; display: flex; gap: 15px;">
+        <div style="padding: 15px; background: #e2e8f0; border-radius: 6px;">
+            <h3>Пользователи</h3>
+            <a href="/site/index">Управление</a>
+        </div>
+        <div style="padding: 15px; background: #e2e8f0; border-radius: 6px;">
+            <h3>Настройки</h3>
+            <a href="#">Система</a>
+        </div>
+    </div>
+</div>

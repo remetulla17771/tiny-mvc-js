@@ -1,0 +1,60 @@
+async render(viewName, params = {}) {
+        const viewEngine = Yii.app.get('view');
+
+        // Создаем экземпляр view для текущего контроллера
+        this.view = new ViewManager();
+
+        const currentUser = await Yii.app.user.findIdentity();
+
+        // framework/BaseController.js
+        const registerAsset = (BundleClass) => {
+            if (BundleClass && typeof BundleClass.register === 'function') {
+                return BundleClass.register(this.view);
+            }
+            console.warn('registerAsset Warning: Invalid Asset Bundle class passed:', BundleClass);
+            return null;
+        };
+
+        // Регистрируем AppAsset
+        AppAsset.register(this.view);
+
+        let viewPath = '';
+        if (viewName === 'error') {
+            viewPath = 'site/error.njk';
+        } else {
+            const controllerName = this.constructor.name.replace('Controller', '').toLowerCase();
+            viewPath = `${controllerName}/${viewName}.njk`;
+        }
+
+        const flashes = Yii.app.session ? Yii.app.session.getAllFlashes() : {};
+
+        const renderParams = {
+            ...params,
+            Yii,
+            ActiveForm,
+            registerAsset,
+            flashes,
+            view: this.view, // Передаем ссылку на единый view
+            year: new Date().getFullYear(),
+            currentUser, // <-- Доступен в любом шаблоне!
+            isGuest: Yii.app.user.isGuest
+        };
+
+        // 1. Рендерим представление (здесь выполняются вызовы registerAsset из .njk)
+        const content = viewEngine.render(viewPath, renderParams);
+
+        // 2. Рендерим макет (лейаут получит все зарегистрированные ассеты, в т.ч. из viewPath)
+        if (this.layout) {
+            const layoutPath = `${this.layout}.njk`;
+            const html = viewEngine.render(layoutPath, {
+                ...renderParams,
+                content,
+                title: params.title || 'Yii2 Node Application'
+            });
+
+            this.res.type('text/html').send(html);
+            return;
+        }
+
+        this.res.type('text/html').send(content);
+    }

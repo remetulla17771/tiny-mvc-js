@@ -1,0 +1,24 @@
+<h1>Создание нового пользователя</h1>
+
+
+<a href="/site/index" class="btn btn-primary">&larr; Назад</a>
+
+{% set form = ActiveForm.begin({ action: '/site/create', method: 'post' }) %}
+
+{# 2. Выводим открывающий тег <form> #}
+{{ form.renderBegin() | safe }}
+
+    {{ form.field(user, 'username').textInput() | safe }}
+
+    {{ form.field(user, 'email').textInput().label('Электронная почта') | safe }}
+
+    {{ form.field(user, 'password').textInput() | safe }}
+
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <a href="/site/index" class="btn btn-secondary">Отмена</a>
+    </div>
+
+{# 3. Закрываем форму #}
+{{ ActiveForm.end() | safe }}
